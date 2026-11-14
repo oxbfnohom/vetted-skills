@@ -18,7 +18,7 @@ One command to find, one command to vet, and an install that refuses to run on a
 
 ## Install
 
-Requires Python 3.9+. No dependencies (tested on 3.9 and 3.12, Linux and Windows).
+Requires Python 3.9+. No dependencies (the full suite is run on 3.9 and 3.11 here, and CI also runs 3.12, on Linux and Windows).
 
 ```bash
 pipx install git+https://github.com/oxbfnohom/vetted-skills   # or:
