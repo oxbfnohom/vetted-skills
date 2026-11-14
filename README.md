@@ -154,6 +154,15 @@ vsk targets | cache list|clear | config | doctor
 the findings and disagree — not as a shortcut. `--no-external` runs the built-in rule engine alone (useful for
 CI, or on a machine with no third-party scanner installed).
 
+## Prior art, stated plainly
+
+Skill registries (skills.sh / `vercel-labs/skills`) and skill scanners (NVIDIA SkillSpector,
+`Tencent/AI-Infra-Guard`, `snyk/agent-scan`, `cisco-ai-defense/skill-scanner`, …) both exist,
+and so do runtime-level guards — Hermes Agent ships `hermes skills` plus a regex `skills_guard`
+with a trust matrix. None of them puts a content verdict next to a search result, and none of
+them freezes the commit you vetted. That is the whole of what this does; if you already run a
+runtime with a hub, use it first. See `docs/prior-art.md`.
+
 ## Docs
 
 * `docs/case-study-find-skills.md` — a real run against a popular registry skill, with numbers.

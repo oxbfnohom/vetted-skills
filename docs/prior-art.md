@@ -11,6 +11,18 @@ bring). `vsk` exists because nothing joined the two in a way any agent framework
 | `skilld-dev/skilld` | ~330 | alternative registry, preview/run a skill in a sandbox | no security verdict |
 | `davila7/claude-code-templates` | — | template/marketplace repo; runs a scanner in *its* CI | not a user-facing gate |
 
+## Agent runtimes that ship their own gate
+
+| runtime | what it ships | where it stops |
+|---|---|---|
+| Hermes Agent | `hermes skills` — search/browse across ~16 sources, `inspect` without installing, `install`/`audit`, plus `tools/skills_guard.py`: a regex scan of externally-sourced skills with a trust matrix (`builtin` never scanned; `trusted` allows caution; `community` blocks on any finding) | the gate is at **install** time and search results carry only `trust_level` + install count — no verdict column, so a candidate list cannot be triaged before anything is fetched |
+
+That last point is the overlap worth naming honestly: a runtime-level guard and a standalone
+vetting client solve adjacent halves of the same problem. `vsk` is the standalone half —
+framework-agnostic, verdict *before* install, SHA frozen, provenance recorded. If you run
+Hermes, `hermes skills` is already there and you should use it; `vsk` is for looking at a
+registry without a runtime, or from a runtime that has no hub of its own.
+
 ## Scanners and auditors
 
 | project | stars | shape | verdict model |

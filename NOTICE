@@ -34,6 +34,13 @@ What was consulted, and what was taken from each
    "vet before install" repositories)
    Taken: nothing. They are listed in `docs/prior-art.md` so users can compare.
 
+5. Hermes Agent's own skills hub
+   Taken: the shape of the problem, and the reminder that a runtime usually ships its own
+   guard — `hermes skills` (search/inspect/install/audit) and `tools/skills_guard.py`
+   (regex scan + trust matrix). Recorded here because a reader comparing the two deserves to
+   know which one came first, and because `vsk` deliberately does NOT reimplement a
+   trust-matrix gate: it scores content, and leaves runtime policy to the runtime.
+
 Rule set
 --------
 
