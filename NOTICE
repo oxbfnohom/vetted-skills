@@ -1,0 +1,52 @@
+NOTICE — provenance and prior art
+=================================
+
+vetted-skills (`vsk`) is original code, MIT licensed, (c) 2026 oxbfnohom.
+
+No source code was copied, adapted, or vendored from another project. This file records
+what was *read* while building it, so the boundary is checkable rather than claimed.
+
+What was consulted, and what was taken from each
+------------------------------------------------
+
+1. skills.sh / vercel-labs/skills (registry + CLI)
+   Taken: the HTTP shape of the public search API only — the endpoint path
+   (`GET https://skills.sh/api/search?q=…`) and the two response fields actually used
+   (`skills[].id`, `skills[].installs`). Discoverable in one `curl`, and documented by use.
+   Not taken: any CLI code, output formatting, archive handling, agent-detection logic,
+   telemetry, or diagnostics.
+
+2. NVIDIA/SkillSpector (scanner)
+   Taken: nothing at code level. Used as an *optional external scanner* through its public
+   CLI, and its reports (which flag unpinned `npx` in install docs as a medium issue) are
+   cited in the README as prior art for the verdict model.
+   Not taken: its rule set, scoring, or report schema — `vsk` only needs a generic JSON
+   pass (`verdict` / `score` / `findings`) to merge a foreign verdict.
+
+3. Agent runtimes with a built-in skills hub
+   Taken: the *shape* of a trust model (builtin / trusted / community / agent-created, and
+   the rule that a caution verdict on a community source is blocked). This is a design
+   idea about policies, not code; `vsk` implements its own thresholds and its own
+   verdict decisions in `src/vsk/rules.py`.
+
+4. Other scanners surveyed for the field map (Tencent AI-Infra-Guard, snyk/agent-scan,
+   cisco-ai-defense/skill-scanner, safeskill, skillvet, skilld, and several small
+   "vet before install" repositories)
+   Taken: nothing. They are listed in `docs/prior-art.md` so users can compare.
+
+Rule set
+--------
+
+Every rule in `src/vsk/rules.py` was written from the threat pattern itself (what a
+download-piped-into-shell, a credential read, a webhook POST, or a persistence write looks
+like in text). Rule ids, categories, severities and thresholds are ours.
+
+Public endpoints used at runtime
+--------------------------------
+
+* `https://skills.sh/api/search`  — registry search (`vsk search`)
+* `https://api.github.com/...`    — repo metadata, ref resolution (`vsk vet`/`install`)
+* `https://codeload.github.com/...` — repo tarball, from which only the skill folder is read
+
+All three are public HTTP interfaces addressed by `urllib` from the standard library.
+No third-party package is required to run `vsk`.

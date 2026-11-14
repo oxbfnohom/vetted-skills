@@ -1,0 +1,6 @@
+# A scanner repo contains attack *descriptions* on purpose. Files whose job is to
+# describe or detect an attack are not attacks; everything else is still scanned.
+tests/
+src/vsk/rules.py
+src/vsk/scan.py
+docs/

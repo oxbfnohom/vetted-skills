@@ -1,0 +1,19 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+build/
+dist/
+.eggs/
+.venv/
+venv/
+.pytest_cache/
+.mypy_cache/
+
+# vsk runtime artifacts
+.vsk/
+*.vsk-provenance.json
+
+# local scratch
+/tmp/
+*.log

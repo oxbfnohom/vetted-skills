@@ -1,0 +1,49 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+        python-version: ["3.9", "3.12"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install (editable, no dependencies)
+        run: python -m pip install -e .
+      - name: Unit tests (offline)
+        run: python -m unittest discover -s tests -v
+      - name: Self-scan must be safe
+        run: python -m vsk scan . --no-external --no-cache
+      - name: CLI smoke
+        run: |
+          python -m vsk --version
+          python -m vsk targets --json
+          python -m vsk doctor --json
+
+  network:
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: python -m pip install -e .
+      - name: Live registry search + vet one skill
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          python -m vsk search "security audit" --limit 3
+          python -m vsk vet vercel-labs/skills/find-skills --json > vet.json
+          python -c "import json;d=json.load(open('vet.json'));print(d['verdict'],d['score'],d['counts'])"
