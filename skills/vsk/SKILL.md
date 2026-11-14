@@ -13,11 +13,12 @@ need to pick a skill from a registry and want the security verdict **before** an
 ## Bootstrap (once per machine)
 
 ```bash
-pipx install git+https://github.com/oxbfnohom/vetted-skills
+pipx install "git+https://github.com/oxbfnohom/vetted-skills@v0.1.0"
 vsk doctor          # network + which external scanners were detected
 ```
 
-No pipx? `python -m pip install --user git+https://github.com/oxbfnohom/vetted-skills`.
+No pipx? `python -m pip install --user "git+https://github.com/oxbfnohom/vetted-skills@v0.1.0"`.
+Pin the tag or a commit: an unpinned `git+` URL is the drift this tool exists to catch.
 If a runtime already ships a skills hub (Hermes: `hermes skills`), use that for installing and
 keep `vsk` for the pre-install triage step below.
 

@@ -21,8 +21,8 @@ One command to find, one command to vet, and an install that refuses to run on a
 Requires Python 3.9+. No dependencies (the full suite is run on 3.9 and 3.11 here, and CI also runs 3.12, on Linux and Windows).
 
 ```bash
-pipx install git+https://github.com/oxbfnohom/vetted-skills   # or:
-pip install git+https://github.com/oxbfnohom/vetted-skills
+pipx install "git+https://github.com/oxbfnohom/vetted-skills@v0.1.0"     # or:
+pip install "git+https://github.com/oxbfnohom/vetted-skills@v0.1.0"
 vsk doctor      # environment + network self-check
 ```
 

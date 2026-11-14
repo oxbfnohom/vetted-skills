@@ -33,7 +33,7 @@ MAX_FILE_BYTES = 512 * 1024
 MAX_FINDINGS_PER_RULE = 25
 
 # Bump on any rule/threshold change: cached verdicts are keyed by content + this.
-RULE_SET_VERSION = "3"
+RULE_SET_VERSION = "5"
 
 
 @dataclass(frozen=True)
@@ -150,11 +150,16 @@ RAW_RULES: Sequence[tuple] = (
      "Claims elevated privileges / jailbreak framing"),
     # --- supply chain -----------------------------------------------------
     ("SUPPLY-UNPINNED-NPX", "supply-chain", MEDIUM,
-     r"npx\s+(-y\s+)?(--yes\s+)?[a-z0-9@/_.-]+(?:\s|$)",
+     r"npx\s+(-y\s+)?(--yes\s+)?(?!\S*@\d)[a-z0-9@/_.-]+(?:\s|$)",
      "Runs npx without a pinned version (repo can change under you)"),
     ("SUPPLY-UNPINNED-PIP", "supply-chain", MEDIUM,
-     r"pip\s+install\s+(?!-r\b)[a-zA-Z0-9_.-]+(?![=<>~])",
+     # Skip flag tokens (`--user`, `-e .`, `-r file`): the package is what must be pinned, and a
+     # bare `.` or a requirements file is not a package name.
+     r"pip\s+install\s+(?:(?!-r\b)-{1,2}[\w-]+\s+)*(?!git\+)(?<![\w.-])(?=[a-zA-Z0-9])[a-zA-Z0-9_.-]+(?![\w=<>~-])",
      "Installs a Python package without a pinned version"),
+    ("SUPPLY-UNPINNED-GIT", "supply-chain", MEDIUM,
+     r"pip\s+install(?=[^\n]*git\+https?://)(?![^\n]*git\+[^\n]*@)",
+     "Installs from a git URL without pinning a tag or commit"),
     ("SUPPLY-INSTALL-HOOK", "supply-chain", HIGH,
      r"\"(pre|post)install\"\s*:|\"(prepare|prepack)\"\s*:",
      "Package install hook runs code at install time"),
