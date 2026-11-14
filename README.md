@@ -18,7 +18,7 @@ One command to find, one command to vet, and an install that refuses to run on a
 
 ## Install
 
-Requires Python 3.9+. No dependencies.
+Requires Python 3.9+. No dependencies (tested on 3.9 and 3.12, Linux and Windows).
 
 ```bash
 pipx install git+https://github.com/oxbfnohom/vetted-skills   # or:
@@ -74,9 +74,10 @@ Exit codes: `0` safe, `2` blocked / caution / drift, `1` error. Safe to use in C
 
 ## Rule engine
 
-62 rules over 9 categories — `remote-exec`, `credentials`, `exfiltration`, `destructive`, `persistence`,
-`agent-integrity`, `prompt-injection`, `supply-chain`, `obfuscation` — plus `structure` and `network`.
-Each finding carries a severity (`low`…`critical`), a file, a line, and the offending text.
+40 rules over 11 categories — `remote-exec`, `credentials`, `exfiltration`, `destructive`, `persistence`,
+`agent-integrity`, `prompt-injection`, `supply-chain`, `obfuscation`, `network`, `hardening` — plus a
+structural pass (`structure`). Each finding carries a severity (`low`…`critical`), a file, a line, and the
+offending text.
 
 Scoring: `critical 40 · high 20 · medium 8 · low 3`, capped at 100.
 

@@ -38,7 +38,7 @@ skill folder, not the project that hosts it.
 
 | check | gate |
 |---|---|
-| `python -m unittest discover -s tests` | must pass (25 tests, no network) |
+| `python -m unittest discover -s tests` | must pass (26 tests, no network) |
 | `vsk scan . --no-external` | must be `safe` (exit 0) |
 | `vsk doctor` | informational; non-zero when the registry/GitHub is unreachable |
 

@@ -21,7 +21,7 @@ $ vsk vet vercel-labs/skills/find-skills
 
 | engine | verdict | score | findings |
 |---|---|---|---|
-| `vsk` built-in (62 rules) | **caution** | 88 | 11 × medium — all `SUPPLY-UNPINNED-NPX` |
+| `vsk` built-in (40 rules) | **caution** | 88 | 11 × medium — all `SUPPLY-UNPINNED-NPX` |
 | external (SkillSpector, `--no-llm`) | safe | 7 | 12 × medium |
 
 Every single finding points at the same habit: the documentation tells the reader to run
