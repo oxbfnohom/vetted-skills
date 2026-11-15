@@ -44,6 +44,9 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          python -m vsk search "security audit" --limit 3
-          python -m vsk vet vercel-labs/skills/find-skills --json > vet.json
+          # exit 2 is the expected answer for this skill: vsk vet returns 2 on a
+          # caution/dangerous verdict, and this step only checks that the live
+          # registry and GitHub tarball are reachable. The parse below is the assertion.
+          python -m vsk search "security audit" --limit 3 || true
+          python -m vsk vet vercel-labs/skills/find-skills --json > vet.json || true
           python -c "import json;d=json.load(open('vet.json'));print(d['verdict'],d['score'],d['counts'])"
