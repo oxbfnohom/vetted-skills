@@ -1,20 +1,8 @@
 # vetted-skills (`vsk`)
 
-Search an agent-skill registry, see a security verdict **before** anything lands on your disk, then install
-only what passed.
+Search for agent skills, inspect their security findings, and install a reviewed copy into your agent's skill directory.
 
-Skills have become the package ecosystem of AI agents — and roughly a quarter of the ones published in the
-wild carry something nasty (see *Prior art*). Every registry ships a fast installer. None of them ship a
-gate. `vsk` is the missing gate:
-
-```
-$ vsk search "security audit" --scan
-SAFE      8  148495 installs  firebase/agent-skills/firebase-security-rules-auditor
-DANGER   74   21043 installs  someone/popular-thing/auto-helper
-                          ^ the pattern this flags: curl|bash + ~/.ssh read + webhook POST
-```
-
-One command to find, one command to vet, and an install that refuses to run on a bad verdict.
+`vsk` combines registry search, static analysis, optional external scanners, and an install gate in a standalone Python CLI. Scanning downloads source into a staging directory; it does not install the skill or execute its instructions. Each installation records the source commit and a content digest for later verification.
 
 ## Install
 
@@ -35,7 +23,88 @@ python -m pip install -e .
 vsk --help
 ```
 
-## Quickstart
+## User workflow
+
+```text
+Search the registry, or bring a skill URL
+                    |
+                    v
+Resolve a commit and stage the skill folder
+                    |
+                    v
+Scan text and structure + optional external scanners
+                    |
+                    v
+Read the findings and choose whether to proceed
+                    |
+         +----------+-----------+
+         |          |           |
+        safe      caution    dangerous
+         |          |           |
+      install    requires     blocked
+                 --confirm
+         |          |
+         +-----+----+
+               |
+               v
+Copy the scanned files into the chosen agent directory
+Record the commit, verdict, and content digest
+               |
+               v
+Run verify later to detect local changes and rescan
+```
+
+### 1. Find candidates
+
+Run `vsk search "video editing" --limit 5` for a list sorted by install count.
+Add `--scan` to include a security verdict for each result. Search results help you
+choose what to inspect; install counts do not establish trust.
+
+### 2. Inspect a candidate
+
+Run `vsk vet vercel-labs/skills/find-skills`, or supply its supported GitHub or
+skills.sh URL. The tool resolves a commit, extracts the skill folder from a repository
+archive, and scans that folder. Reports include the verdict, score, file and line
+references, and results from configured external scanners. The most severe verdict wins.
+Read the findings: documentation can trigger rules without being malicious.
+
+### 3. Install into an explicit destination
+
+Use `vsk targets` to see recognized agent directories, then run:
+
+```bash
+vsk install anthropics/skills/skill-creator --to ~/.claude/skills
+```
+
+The install command prepares and scans the source again, then copies that scanned
+snapshot. A `safe` verdict passes; `caution` requires `--confirm`; `dangerous` is
+blocked by default. An explicit `--force` override exists for reviewed exceptions;
+non-safe installs still require `--confirm`. Review the current install report,
+especially if the source changed since your earlier `vet` command. To use a specific
+reviewed revision, include its commit SHA as `owner/repo/skill@<commit-sha>`.
+
+The installed folder contains `.vsk-provenance.json` with its source commit, digest,
+and verdict. Use your agent's normal skill reload procedure after installation.
+
+### 4. Verify the installed copy
+
+```bash
+vsk verify ~/.claude/skills/skill-creator
+```
+
+Verification rescans the local files and compares their digest with the installation
+record. Drift means the local content changed; it does not prove malicious intent.
+This command does not poll the upstream repository or automatically update skills.
+
+### Using vsk through an AI agent
+
+The repository includes an agent instruction file at [`skills/vsk/SKILL.md`](skills/vsk/SKILL.md).
+Place that folder in the skill directory your runtime reads, and install the CLI using
+the instructions above. Ask the agent to find or review a skill. It can run the same
+search, inspection, install, and verification commands, subject to your approval rules.
+External scanners are optional integrations and must be installed separately.
+
+## Command examples
 
 ```bash
 # 1. find (registry search, sorted by install count)
@@ -198,7 +267,3 @@ them. Credit where it is due, and an honest map of the field:
 No code was copied from any of them. The `skills.sh` search endpoint and the GitHub tarball endpoint are
 public, documented-by-use HTTP interfaces; everything in `src/vsk/` is original code, and the rule set was
 written from the threat patterns themselves. See `NOTICE` and `docs/prior-art.md`.
-
-## License
-
-MIT — see `LICENSE`. Use it on code and skills you are allowed to inspect.
